@@ -31,9 +31,9 @@ SoundDataMutate module:
 > -- mutate the amplitude of a SoundRoot
 > mutateAmplB :: (RandomGen g) => g -> SoundRoot -> (SoundRoot,g)
 > mutateAmplB gen (Sine f a) = ((Sine f new_a),new_gen)
->   where out = (mutateDouble gen 0.1 a)
+>   where out = (mutateDouble gen 0.05 a)
 >         new_gen = snd out
->         new_a = fst out
+>         new_a = (max 0.0 (min 1.0 (fst out)))
 
 > --a list of mutation options for "basic" SoundData
 > mutOptionsB :: (RandomGen g) => g -> [SoundRoot -> (SoundRoot,g)]
