@@ -35,5 +35,5 @@ SoundDataMate module:
 >     step2 x = map (\y -> crossoverBasic x y gen) lst
 
 > --TEST VALUES; to make sure the mating is working
-> mateBasicA = [(Sine 100.1 1.1),(Sine 200.1 2.1),(Sine 300.1 3.1),(Sine 400.1 4.1),(Sine 500.1 5.1),(Sine 600.1 6.1)]
-> mateBasicB = [(Sine 100.2 1.2),(Sine 200.2 2.2),(Sine 300.2 3.2),(Sine 400.2 4.2),(Sine 500.2 5.2),(Sine 600.2 6.2)]
+> mateBasicA = [(Sine 100.1 0.1),(Sine 200.1 0.1),(Sine 300.1 0.1),(Sine 400.1 0.1),(Sine 500.1 0.1),(Sine 600.1 0.1)]
+> mateBasicB = [(Sine 100.2 0.2),(Sine 200.2 0.2),(Sine 300.2 0.2),(Sine 400.2 0.2),(Sine 500.2 0.2),(Sine 600.2 0.2)]

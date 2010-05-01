@@ -48,11 +48,16 @@ HornTest module:
 > hTimes x = map (\(a, b, c) -> a) (hMakeTriples (h x))
 > hAmpls x = map (\(a, b, c) -> c) (hMakeTriples (h x))
 
+> hAmpsAve x = (foldr (+) 0 amps) / (fromIntegral (length amps))
+>   where amps = (hAmpls x)
 > hFreqsAve x = (foldr (+) 0 fqs) / (fromIntegral (length fqs))
 >   where fqs = (hFreqs x)
 
 > hrn x = (sPart (s (hFreqsAve x)) (env (hAmpls x) (tail (hTimes x))))
 > hnNormal = map (\x -> (hrn x)) [0..12]
+
+> hrnB x = (Sine (hFreqsAve x) (hAmpsAve x))
+> hnBasic = map (\x -> (hrnB x)) [0..12]
 
 > testHorn = renderSoundN "hornTest.wav" 0.5 hnNormal
 
@@ -63,6 +68,11 @@ HornTest module:
 > otherE 1 = (env [0.5,1.0,1.0,0.0] [0.1,2.9,3.0])
 > otherE 2 = (env [0.25,0.5,0.5,0.0] [0.1,2.9,3.0])
 > otherE 3 = (env [0.5,0.25,0.1,0.0] [0.1,2.0,3.0])
+> otherF 0 = [(0.0,100),(0.3,200),(0.6,350),(1.0,440),(3.0,440)]
+> otherF 1 = [(0.0,100),(0.3,300),(0.6,500),(1.0,880),(3.0,880)]
+> otherF 2 = [(0.0,100),(0.3,400),(0.6,800),(1.0,1320),(3.0,1320)]
+> otherF 3 = [(0.0,100),(0.3,600),(0.6,900),(1.0,1760),(3.0,1760)]
+
 > otherS 0 = (sPart (s 440) (otherE 0))
 > otherS 1 = (sPart (s 880) (otherE 1))
 > otherS 2 = (sPart (s 1320) (otherE 2))
@@ -70,15 +80,19 @@ HornTest module:
 
 > otherArray = map (\x -> (otherS x)) [0..3]
 
-> otherB 0 = (Sine 440 0.75)
-> otherB 1 = (Sine 440 1.0)
-> otherB 2 = (Sine 440 0.5)
-> otherB 3 = (Sine 440 0.1)
+> otherB 0 = (Sine 440 0.15)
+> otherB 1 = (Sine 880 0.2)
+> otherB 2 = (Sine 1320 0.1)
+> otherB 3 = (Sine 1760 0.03)
 
 > otherBasic = map (\x -> (otherB x)) [0..3]
+> otherBasicRepeated = map (\x -> (otherB x)) (concat [[0],[0..3],[0..3],[0..3]])
+
+
+> otherComplex = map (\x -> (ComplexPartial (otherF x) (otherE x))) [0..3]
 
 > testOtherB = renderSoundB "otherTestB.wav" 3.0 otherBasic
-
+> testOtherC = renderSoundC "otherTestC.wav" 3.0 otherComplex
 > testOther = renderSoundN "otherTest.wav" 3.0 otherArray
 
 

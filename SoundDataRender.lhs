@@ -119,31 +119,34 @@
 > --   *Note the hard limit on the number of SoundPartials
 > --   *sinesNormal assumes a fixed frequency
 > sinesComplex :: ComplexSoundData -> AudSF () Double
-> sinesComplex as =
->   let sr = map (\(ComplexPartial a b) -> a) as
->       es = map (\(ComplexPartial a b) -> b) as
->       freqs = (map (map (\(a,b) -> b)) sr)
->       xs n = map (\x -> x !! n) freqs
->       fdurs n = hDurs (map (\x -> x !! n) (map (map (\(a,b) -> a)) sr))
->       amps x = amps_ (el es x)
->       durs x = durs_ (el es x)
+> sinesComplex inst =
+>   let as = take 15 inst --limit to 15!
+>       freqRoot = map (\(ComplexPartial a b) -> a) as
+>       envelope = map (\(ComplexPartial a b) -> b) as
+>       freqs = (map (map snd) freqRoot)
+>       freqN n = getN n freqs
+>       fdurs = (map (map fst) freqRoot)
+>       fdurN n = tail (hDurs (getN n fdurs))
+>       getN n lst = if ((length lst) > n) then (lst !! n) else [0.0]
+>       amps x = amps_ (el envelope x)
+>       durs x = durs_ (el envelope x)
 >   in proc _ -> do
->     f0  <- linseg (xs 0)  (fdurs 0)   -< () --Frequencies
->     f1  <- linseg (xs 1)  (fdurs 1)   -< ()
->     f2  <- linseg (xs 2)  (fdurs 2)   -< ()
->     f3  <- linseg (xs 3)  (fdurs 3)   -< ()
->     f4  <- linseg (xs 4)  (fdurs 4)   -< ()
->     f5  <- linseg (xs 5)  (fdurs 5)   -< ()
->     f6  <- linseg (xs 6)  (fdurs 6)   -< ()
->     f7  <- linseg (xs 7)  (fdurs 7)   -< ()
->     f8  <- linseg (xs 8)  (fdurs 8)   -< ()
->     f9  <- linseg (xs 9)  (fdurs 9)   -< ()
->     f10 <- linseg (xs 10) (fdurs 10)  -< ()
->     f11 <- linseg (xs 11) (fdurs 11)  -< ()
->     f12 <- linseg (xs 12) (fdurs 12)  -< ()
->     f13 <- linseg (xs 13) (fdurs 13)  -< ()
->     f14 <- linseg (xs 14) (fdurs 14)  -< ()
->     f15 <- linseg (xs 15) (fdurs 15)  -< ()
+>     f0  <- linseg (freqN 0)  (fdurN 0)   -< () --Frequencies
+>     f1  <- linseg (freqN 1)  (fdurN 1)   -< ()
+>     f2  <- linseg (freqN 2)  (fdurN 2)   -< ()
+>     f3  <- linseg (freqN 3)  (fdurN 3)   -< ()
+>     f4  <- linseg (freqN 4)  (fdurN 4)   -< ()
+>     f5  <- linseg (freqN 5)  (fdurN 5)   -< ()
+>     f6  <- linseg (freqN 6)  (fdurN 6)   -< ()
+>     f7  <- linseg (freqN 7)  (fdurN 7)   -< ()
+>     f8  <- linseg (freqN 8)  (fdurN 8)   -< ()
+>     f9  <- linseg (freqN 9)  (fdurN 9)   -< ()
+>     f10 <- linseg (freqN 10) (fdurN 10)  -< ()
+>     f11 <- linseg (freqN 11) (fdurN 11)  -< ()
+>     f12 <- linseg (freqN 12) (fdurN 12)  -< ()
+>     f13 <- linseg (freqN 13) (fdurN 13)  -< ()
+>     f14 <- linseg (freqN 14) (fdurN 14)  -< ()
+>     f15 <- linseg (freqN 15) (fdurN 15)  -< ()
 >     e0  <- linseg (amps 0)  (durs 0)  -< () --ENVELOPES
 >     e1  <- linseg (amps 1)  (durs 1)  -< ()
 >     e2  <- linseg (amps 2)  (durs 2)  -< ()
@@ -178,6 +181,20 @@
 >     x15 <- oscSine -< f15
 >     let sum = x0*e0+x1*e1+x2*e2+x3*e3+x4*e4+x5*e5+x6*e6+x7*e7+x8*e8+x9*e9+x10*e10+x11*e11+x12*e12+x13*e13+x14*e14+x15*e15
 >     returnA -< sum/(fromIntegral (min 15 (length freqs)))
+
+
+> --TESTING
+> testStuff inst n = freqN n
+>   where as = take 15 inst --limit to 15!
+>         freqRoot = map (\(ComplexPartial a b) -> a) as
+>         envelope = map (\(ComplexPartial a b) -> b) as
+>         freqs = (map (map snd) freqRoot)
+>         freqN n = getN n freqs
+>         fdurs = (map (map fst) freqRoot)
+>         fdurN n = hDurs (getN n fdurs)
+>         getN n lst = if ((length lst) > n) then (lst !! n) else [0.0]
+>         amps x = amps_ (el envelope x)
+>         durs x = durs_ (el envelope x)
 
 > --RENDER THE SOUND TO A FILE
 > renderSoundN name dur dat = outFile name dur (sinesNormal  dat)

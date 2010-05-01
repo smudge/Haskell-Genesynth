@@ -33,10 +33,16 @@ Type Declarations
 > --Envelope with Amplitude at time Zero followed by array of (Time, Amplitude) pairs
 > data Envelope = LinSeg [Amplitude] [Time] --Linear
 >               | ExpSeg [Amplitude] [Time] --Exponential
+> instance Show Envelope where
+>   show (LinSeg a t) = "("++(show a)++","++(show t)++")"
 
 > --A SoundPartial consists of a SoundRoot or FreqRoot and an Envelope
 > data SoundPartial = SoundPartial SoundRoot Envelope
 > data ComplexPartial = ComplexPartial FreqRoot Envelope
+> instance Show SoundPartial where
+>   show (SoundPartial f e) = "("++(show f)++","++(show e)++")"
+> instance Show ComplexPartial where
+>   show (ComplexPartial f e) = "("++(show f)++","++(show e)++")"
 
 > --A SoundData is a list of SoundPartials
 > type SoundData = [SoundPartial]

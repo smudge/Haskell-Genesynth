@@ -22,10 +22,16 @@ SoundDataMutate module:
 >         new_a = (fst out) + a
 >         new_gen = snd out
 
-> -- mutate the frequency of a SoundRoot
+> -- mutate the frequency of a SoundRoot (very small leaps)
 > mutateFreqB :: (RandomGen g) => g -> SoundRoot -> (SoundRoot,g)
 > mutateFreqB gen (Sine f a) = ((Sine new_f a),new_gen)
->   where out = (mutateDouble gen 5.0 f)
+>   where out = (mutateDouble gen 1.0 f)
+>         new_gen = snd out
+>         new_f = fst out
+> -- mutate the frequency of a SoundRoot (bigger leaps!)
+> big_mutateFreqB :: (RandomGen g) => g -> SoundRoot -> (SoundRoot,g)
+> big_mutateFreqB gen (Sine f a) = ((Sine new_f a),new_gen)
+>   where out = (mutateDouble gen 100.0 f)
 >         new_gen = snd out
 >         new_f = fst out
 > -- mutate the amplitude of a SoundRoot
@@ -37,7 +43,7 @@ SoundDataMutate module:
 
 > --a list of mutation options for "basic" SoundData
 > mutOptionsB :: (RandomGen g) => g -> [SoundRoot -> (SoundRoot,g)]
-> mutOptionsB gen = [mutateFreqB gen,mutateAmplB gen]
+> mutOptionsB gen = [mutateFreqB gen,mutateAmplB gen,big_mutateFreqB gen]
 
 > --choose a random mutation from a list of mutations ("mutOptionsB")
 > chooseMutation gen options = ((array !! get_i),out_gen)
