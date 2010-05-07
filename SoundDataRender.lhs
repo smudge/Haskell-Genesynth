@@ -1,3 +1,14 @@
+--------------------------------------------------------------------------------
+Author:   Nathan Griffith
+Contact:  github.com/smudge
+          twitter.com/smudgethefirst
+Yale University
+CPSC 490 (Senior Project): Spring 2010
+--------------------------------------------------------------------------------
+SoundDataRender module:
+  Functions for rendering SoundData using Euterpea arrow notation.
+--------------------------------------------------------------------------------
+
 > {-# LANGUAGE Arrows #-}
 
 > module SoundDataRender where
@@ -13,33 +24,28 @@
 > import Control.CCA.Types
 > import SoundData
 
+++++++++++++++++++++
+The Render Functions
+++++++++++++++++++++
 
-> --Useful functions (aliases, shorthand)
-> s f = Sine f 0
-> type AudSF a b = Signal AudRate a b
-> type CtrSF a b = Signal CtrRate a b
+> --RENDER THE SOUND TO A FILE
+> renderSoundB :: String -> Double -> BasicSoundData -> IO()
+> renderSoundB name dur dat = outFile name dur (sinesBasic   dat) --Basic
 
-> --pre-defined sine tables / generators / oscilators
-> sineTable = compSine1 16384 [1]
-> f1 = gen10 8192 [1]	
-> oscSine = oscil sineTable 0
+> renderSoundN :: String -> Double -> SoundData -> IO()
+> renderSoundN name dur dat = outFile name dur (sinesNormal  dat) --Normal
 
-> --single sine oscillator (for rendering a single frequency)
-> sine :: Double -> AudSF () Double
-> sine a = 
->   proc _ -> do
->     oscSine -< a
+> renderSoundC :: String -> Double -> ComplexSoundData -> IO()
+> renderSoundC name dur dat = outFile name dur (sinesComplex dat) --Complex
 
-> --HELPERS for the vaious sine Additive Synthesis functions
-> amps_ (LinSeg a b) = a
-> durs_ (LinSeg a b) = hDurs b --change time values to duration valuess
-> hDurs x = hRec x [] 0
->   where hRec [] durs prevs = durs
->         hRec times durs prevs = hRec (tail times) (durs ++ [(head times)-prevs]) (head times)
-> el es n = if ((length es) > n) then (es !! n) else (env [1.0] [])
-> sl xs n = if ((length xs) > n) then (xs !! n) else 0
++++++++++++++++++++++++++++++++++++++++++++
+The Render Helpers (Blobs of Arrow Notation)
++++++++++++++++++++++++++++++++++++++++++++
+Note: The hard limit on number of partials can easily be manually increased.
+Currently 15 is the limit for demonstration and readability purposes.
+++
 
-> --Performs Additive Synthesis on a basic SoundData value (an Array of SoundRoots)
+> --Performs Additive Synthesis on a BasicSoundData value (an Array of SoundRoots)
 > --   *Note the hard limit on the number of frequencies
 > --   *sinesBasic assumes a fixed frequency and fixed amplitude
 > sinesBasic :: BasicSoundData -> AudSF () Double
@@ -115,9 +121,9 @@
 >     let sum = x0*e0+x1*e1+x2*e2+x3*e3+x4*e4+x5*e5+x6*e6+x7*e7+x8*e8+x9*e9+x10*e10+x11*e11+x12*e12+x13*e13+x14*e14+x15*e15
 >     returnA -< sum/(fromIntegral (min 15 (length xs)))
 
-> --Performs Additive Synthesis on a SoundData value (an Array of SoundPartials)
+> --Performs Additive Synthesis on a ComplexSoundData value (an Array of CompexPartials)
 > --   *Note the hard limit on the number of SoundPartials
-> --   *sinesNormal assumes a fixed frequency
+> --   *sinesComplex assumes both varying frequency and varying amplitude
 > sinesComplex :: ComplexSoundData -> AudSF () Double
 > sinesComplex inst =
 >   let as = take 15 inst --limit to 15!
@@ -183,20 +189,58 @@
 >     returnA -< sum/(fromIntegral (min 15 (length freqs)))
 
 
-> --TESTING
-> testStuff inst n = freqN n
->   where as = take 15 inst --limit to 15!
->         freqRoot = map (\(ComplexPartial a b) -> a) as
->         envelope = map (\(ComplexPartial a b) -> b) as
->         freqs = (map (map snd) freqRoot)
->         freqN n = getN n freqs
->         fdurs = (map (map fst) freqRoot)
->         fdurN n = hDurs (getN n fdurs)
->         getN n lst = if ((length lst) > n) then (lst !! n) else [0.0]
->         amps x = amps_ (el envelope x)
->         durs x = durs_ (el envelope x)
+++++++++++++++++++++++++++++++++++++
+Helpers (common to each render type)
+++++++++++++++++++++++++++++++++++++
 
-> --RENDER THE SOUND TO A FILE
-> renderSoundN name dur dat = outFile name dur (sinesNormal  dat)
-> renderSoundC name dur dat = outFile name dur (sinesComplex dat)
-> renderSoundB name dur dat = outFile name dur (sinesBasic dat)
+> amps_ :: Envelope -> [Amplitude]
+> amps_ (LinSeg a b) = a --grab the amplitude
+
+> durs_ :: Envelope -> [SoundData.Time]
+> durs_ (LinSeg a b) = hDurs b --change time values to duration valuess
+
+> hDurs :: (Num a) => [a] -> [a] --change time values to duration valuess
+> hDurs x = hRec x [] 0
+>   where hRec [] durs prevs = durs
+>         hRec times durs prevs = hRec (tail times) (durs ++ [(head times)-prevs]) (head times)
+
+> el :: [Envelope] -> Int -> Envelope --if the envelope exists in the list, otherwise use an empty one
+> el es n = if ((length es) > n) then (es !! n) else (env [1.0] [])
+
+> sl :: (Num a) => [a] -> Int -> a --if the frequency exists in the list, otherwise zero
+> sl xs n = if ((length xs) > n) then (xs !! n) else 0
+
++++++++++++++++++
+Useful Functions
++++++++++++++++++
+
+> --Useful functions (aliases, shorthand)
+> type AudSF a b = Signal AudRate a b
+> type CtrSF a b = Signal CtrRate a b
+
+> --pre-defined sine tables / generators / oscilators
+> sineTable :: Table
+> sineTable = compSine1 16384 [1]
+> f1 :: Table
+> f1 = gen10 8192 [1]	
+> oscSine :: AudSF Double Double --sine oscillator
+> oscSine = oscil sineTable 0
+
+> --single sine oscillator (for rendering a single frequency)
+> sine :: Double -> AudSF () Double
+> sine a = 
+>   proc _ -> do
+>     oscSine -< a
+
+ --TESTING (useful for determining if SoundData is being parsed properly)
+ testStuff inst n = freqN n
+   where as = take 15 inst --limit to 15!
+         freqRoot = map (\(ComplexPartial a b) -> a) as
+         envelope = map (\(ComplexPartial a b) -> b) as
+         freqs = (map (map snd) freqRoot)
+         freqN n = getN n freqs
+         fdurs = (map (map fst) freqRoot)
+         fdurN n = hDurs (getN n fdurs)
+         getN n lst = if ((length lst) > n) then (lst !! n) else [0.0]
+         amps x = amps_ (el envelope x)
+         durs x = durs_ (el envelope x)

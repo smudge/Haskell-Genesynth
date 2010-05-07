@@ -5,8 +5,8 @@ Contact:  github.com/smudge
 Yale University
 CPSC 490 (Senior Project): Spring 2010
 --------------------------------------------------------------------------------
-SoundDataMutate module:
-  Functions for sorting a SoundData
+SoundDataSort module:
+  Functions for sorting a SoundData file
 --------------------------------------------------------------------------------
 
 > module SoundDataSort where
@@ -25,15 +25,15 @@ SoundDataMutate module:
 >             fb = (pFreq b)
 
 
-> --Sort pairs of SoundData values and "comparison" values
-> sortPairs :: [(BasicSoundData,Double)] -> [(BasicSoundData,Double)]
+> --Sort SoundData by paired "fitness" value
+> sortPairs :: [(a,Double)] -> [(a,Double)]
 > sortPairs = sortBy sortSD
 >   where
 >     sortSD a b
 >       | (snd a) > (snd b) = GT
 >       | otherwise = LT
 
-> --Sort function (for "Basic" sound data values)
+> --Sort function (for "Basic" sound data values) -- sorts by frequency
 > sortBasic :: BasicSoundData -> BasicSoundData
 > sortBasic = sortBy sortSD
 >   where

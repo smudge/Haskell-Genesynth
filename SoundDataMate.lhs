@@ -28,8 +28,8 @@ SoundDataMate module:
 >             new_item | (fst bool) = a
 >                      | otherwise  = b
 
-> --TODO: update the generator for these s/t each crossover has a new generator
-> crossoverList lst gen = concat step1
+> --crossover a list of BASIC sound datas
+> crossoverBasicPop lst gen = concat step1
 >   where
 >     step1 = map (\x -> (step2 x)) lst
 >     step2 x = map (\y -> crossoverBasic x y gen) lst

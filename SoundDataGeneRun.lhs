@@ -5,7 +5,7 @@ Contact:  github.com/smudge
 Yale University
 CPSC 490 (Senior Project): Spring 2010
 --------------------------------------------------------------------------------
-SoundDataMate module:
+SoundDataGeneRun module:
   Functions for running a genetic algorithm on SoundData values.
   Input is the starting value, generations are compared to the "final" value.
 --------------------------------------------------------------------------------
@@ -18,18 +18,46 @@ SoundDataMate module:
 > import SoundDataMutate
 > import SoundDataCompare
 > import SoundDataRender
+> import Data.List (filter)
 > import HornTest
 > import System.Random
 
+
++++++++++++++++++++++++++++++++++++++++++++++
+Functions For Running and Rendering GA
++++++++++++++++++++++++++++++++++++++++++++++
+
+> renderBasic x = basicRenderComplex "TestComplex.wav" 3.0 0.1 (testBasic)
+
+> runBasic x mut_ops mut_prob start target = runNGens (processPopulation (compareBasic target) crossoverBasicPop (mutateBasic mut_prob mut_ops)) [start] (mygen 20340) x []
+
+> testBasic = runBasic 10000 mutOptionsB 70 guitarBasic hornBasic
+
++++++++++++++++++++++++
+Some Handy Default Data
++++++++++++++++++++++++
+
+> --a list of mutation options for "basic" SoundData
+> mutOptionsB :: (RandomGen g) => g -> [SoundRoot -> (SoundRoot,g)]
+> mutOptionsB gen = [mutateFreqB gen,mutateAmplB gen,big_mutateFreqB gen]
+
+> --a test population for a "basic" run
+> testPopulation :: [[SoundRoot]]
+> testPopulation = [mateBasicA,mateBasicA,mateBasicA,mateBasicB,mateBasicB]
+
++++++++++++++++++++++
+The Genetic Algorithm
++++++++++++++++++++++
+
 > --process 1 iteration on a single population, producing the next generation of individuals
-> processPopulation fitness_fn mutProb mutOptions current_pop randGen = ((new_pop, gen1),top_total_fitness) --new population, final RandGen
+> processPopulation fitness_fn mating_fn mut_fn current_pop randGen = ((new_pop, gen1),top_total_fitness) --returns ((new population, final RandGen), fitness)
 >   where
 >     rand_out = randomInt 1000 randGen
 >     rand_int = fst rand_out
 >     gen1 = snd rand_out
->     mutated = mutateBasicList mutProb mutOptions (mygen rand_int) current_pop
->     crossed_over = crossoverList current_pop (mygen rand_int)
->     new_herd = mutated++crossed_over
+>     mutated = applyToAll mut_fn (mygen rand_int) current_pop 
+>     mated = mating_fn current_pop (mygen rand_int)
+>     new_herd = mutated++mated
 >     fitnessed = map (\x -> (x,fitness_fn x)) new_herd --map fitness function
 >     sorted = sortPairs fitnessed
 >     de_fitnessed = map fst (sorted)
@@ -45,15 +73,13 @@ SoundDataMate module:
 >           new_gen = snd (fst process)
 >           fitness = snd process
 
-> testRun x = runNGens (processPopulation (compareBasic hnBasic) 70 mutOptionsB) [otherBasicRepeated] (mygen 123) x []
-
-> testToC = basicRenderComplex "TestComplex.wav" 3.0 0.1 (testRun 1000)
-
-> timesList timestep start = timeList_ start
->   where
->     timeList_ start = start : (map ((+) timestep) (timeList_ start))
++++++++++++++++++++++++++++++++++
+Parsing And Rendering the Results
++++++++++++++++++++++++++++++++++
 
 > --Convert to a complex SoundData type from the results of a basic genesynth Run
+> --This allows one to hear the conversion within a single sound sample
+> --Sort of a "morph"/"crossfade" between two BasicSoundData types
 > basicRunToComplexData total_time timestep basic_data = finalData
 >   where pairs = reverse (map (map (\(Sine x y) -> (x,y))) basic_data)
 >         lst = map (\n -> (pairs !! (round ((fromIntegral n)*((fromIntegral (bd_ln-1))/(fromIntegral (total_num-1))))))) [0..(total_num-1)] --only take total_num
@@ -71,18 +97,19 @@ SoundDataMate module:
 >                     where n = (round (total_time/timestep)) --determine the number of partials we need to select
 >         makeSoundData as = (ComplexPartial (map (\x -> (thd3 x,fst3 x)) as) (LinSeg (map snd3 as) (map thd3 as)))
 >         finalData = map makeSoundData fixed_partials
+>         timesList timestep start = timeList_ start
+>           where
+>             timeList_ start = start : (map ((+) timestep) (timeList_ start))
 
-
-> --test render a basic run to a single complex sound
+> --Use the funciton above, but render the results.
 > basicRenderComplex name dur timestep basic_data = renderSoundC name (dur*2) (basicRunToComplexData dur timestep basic_data)
 
 
++++++++++++++++++++++++++
+A Couple Helper Functions
++++++++++++++++++++++++++
 
-> --dealing with tuples
+> --dealing with triplets
 > fst3 (a,b,c) = a
 > snd3 (a,b,c) = b
 > thd3 (a,b,c) = c
-
-> renderHeadB thing = renderSoundB "renderHead.wav" 2.0 (head thing)
-
-> testPopulation = [mateBasicA,mateBasicA,mateBasicA,mateBasicB,mateBasicB]
