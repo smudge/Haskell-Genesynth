@@ -19,10 +19,21 @@ HornTest module:
 > import Control.Monad
 > import SoundData
 > import SoundDataRender
+> import SoundDataRandom
 > import SoundDataCompare
 > import SoundDataMutate
 > import SoundDataMate
 > import SoundDataSort
+> import SoundDataGeneRun
+
++++++++++
+Test Data
++++++++++
+
+> --quick pre-defined functions for testing the GA
+> testRender x = basicRenderComplex "TestComplex.wav" 3.0 0.1 (testBasic x)
+> testBasic x = runBasic x mutOptionsB 70 crossoverBasicPop guitarBasic hornBasic
+> testNormal x = runNormal x mutOptionsN 70 crossoverNormalPop guitarNormal hornNormal
 
 
 +++++++++

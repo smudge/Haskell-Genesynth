@@ -22,7 +22,7 @@ SoundDataMate module:
 >   where
 >     crossoverBasic_ [] set2 gen = set2 --trailing values get tagged on at the end
 >     crossoverBasic_ set1 [] gen = set1
->     crossoverBasic_ (a:as) (b:bs) gen = new_item:(crossoverBasic as bs new_gen)
+>     crossoverBasic_ (a:as) (b:bs) gen = new_item:(crossoverBasic_ as bs new_gen)
 >       where bool = randomBool gen
 >             new_gen = snd bool
 >             new_item | (fst bool) = a
@@ -34,6 +34,22 @@ SoundDataMate module:
 >     step1 = map (\x -> (step2 x)) lst
 >     step2 x = map (\y -> crossoverBasic x y gen) lst
 
-> --TEST VALUES; to make sure the mating is working
-> mateBasicA = [(Sine 100.1 0.1),(Sine 200.1 0.1),(Sine 300.1 0.1),(Sine 400.1 0.1),(Sine 500.1 0.1),(Sine 600.1 0.1)]
-> mateBasicB = [(Sine 100.2 0.2),(Sine 200.2 0.2),(Sine 300.2 0.2),(Sine 400.2 0.2),(Sine 500.2 0.2),(Sine 600.2 0.2)]
+
+> --crossover two normal sound datas
+> --this does NOT return a gen, so make sure to send it a new one each time
+> --NOTE: depending on the final algorithm, sorting may not be necessary
+> crossoverNormal set1 set2 gen = crossoverNormal_ (sortSoundData set1) (sortSoundData set2) gen
+>   where
+>     crossoverNormal_ [] set2 gen = set2 --trailing values get tagged on at the end
+>     crossoverNormal_ set1 [] gen = set1
+>     crossoverNormal_ (a:as) (b:bs) gen = new_item:(crossoverNormal_ as bs new_gen)
+>       where bool = randomBool gen
+>             new_gen = snd bool
+>             new_item | (fst bool) = a
+>                      | otherwise  = b
+
+> --crossover a list of BASIC sound datas
+> crossoverNormalPop lst gen = concat step1
+>   where
+>     step1 = map (\x -> (step2 x)) lst
+>     step2 x = map (\y -> crossoverNormal x y gen) lst

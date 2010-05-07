@@ -19,7 +19,6 @@ SoundDataGeneRun module:
 > import SoundDataCompare
 > import SoundDataRender
 > import Data.List (filter)
-> import HornTest
 > import System.Random
 
 
@@ -27,23 +26,31 @@ SoundDataGeneRun module:
 Functions For Running and Rendering GA
 +++++++++++++++++++++++++++++++++++++++++++++
 
-> renderBasic x = basicRenderComplex "TestComplex.wav" 3.0 0.1 (testBasic)
+Very basic functions heavy in defaults:
 
-> runBasic x mut_ops mut_prob start target = runNGens (processPopulation (compareBasic target) crossoverBasicPop (mutateBasic mut_prob mut_ops)) [start] (mygen 20340) x []
 
-> testBasic = runBasic 10000 mutOptionsB 70 guitarBasic hornBasic
+> runBasic x mut_ops mut_prob crossover_fn start target = runNGens (processPopulation (compareBasic target) crossover_fn (mutateBasic mut_prob mut_ops)) [start] (mygen 20340) x []
+> renderBasic name dur timestep sdata = basicRenderComplex name dur timestep sdata
+> simpleBasic start target x output = renderBasic output 10.0 0.1 (runBasic x mutOptionsB 100 crossoverBasicPop start target)
+
+
+> runNormal x mut_ops mut_prob crossover_fn start target = runNGens (processPopulation (compareNormal target) crossover_fn (mutateNormal mut_prob mut_ops)) [start] (mygen 20340) x []
+
+ renderNormal name number_between sdata = normalRenderOrder name number_between sdata
+ simpleNormal start target x output = renderNormal output 10 (runNormal x mutOptionsN 100 crossoverNormalPop start target)
+
 
 +++++++++++++++++++++++
 Some Handy Default Data
 +++++++++++++++++++++++
 
 > --a list of mutation options for "basic" SoundData
-> mutOptionsB :: (RandomGen g) => g -> [SoundRoot -> (SoundRoot,g)]
+> mutOptionsB :: (RandomGen g) => g -> [BasicPartial -> (BasicPartial,g)]
 > mutOptionsB gen = [mutateFreqB gen,mutateAmplB gen,big_mutateFreqB gen]
 
-> --a test population for a "basic" run
-> testPopulation :: [[SoundRoot]]
-> testPopulation = [mateBasicA,mateBasicA,mateBasicA,mateBasicB,mateBasicB]
+> --a list of mutation options for "normal" SoundData
+> mutOptionsN :: (RandomGen g) => g -> [SoundPartial -> (SoundPartial,g)]
+> mutOptionsN gen = [mutateFreqN gen,mutateEnvN gen]
 
 +++++++++++++++++++++
 The Genetic Algorithm

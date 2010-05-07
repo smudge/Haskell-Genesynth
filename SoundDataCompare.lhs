@@ -20,8 +20,8 @@ Compare Normal Types
 ++++++++++++++++++++
 
 > --Default comparison sorts by frequency (low to high) and compares partial-by-partial starting at the fundamental
-> compareSoundData :: SoundData -> SoundData -> Double
-> compareSoundData a b = helper (sortSoundData a) (sortSoundData b) 0
+> compareNormal :: SoundData -> SoundData -> Double
+> compareNormal a b = helper (sortSoundData a) (sortSoundData b) 0
 >   where
 >     helper [] b s = s + sumRemainder b
 >     helper a [] s = s + sumRemainder a
@@ -31,7 +31,7 @@ Compare Normal Types
 >     compareFreq a b = abs((pFreq a) - (pFreq b)) --takes the frequency difference
 >     sumRemainder xs = foldr (+) 0 (map (\x -> (pFreq x)) xs)
 
-> compareEnv a b = 0
+> compareEnv a b = 0 --TODO: compare env
 
 
 +++++++++++++++++++++++

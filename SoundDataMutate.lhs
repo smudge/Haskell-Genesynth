@@ -47,8 +47,8 @@ Mutate Envelope
 +++++++++++++++++++++++
 
 > mutateEnv gen (LinSeg as ts)
->   | (fst choice) < 1 = (LinSeg (addA as) (addT ts))
->   | otherwise = (LinSeg new_as new_ts)
+>   | (fst choice) < 1 = ((LinSeg (addA as) (addT ts)), new_gen)
+>   | otherwise = ((LinSeg new_as new_ts), new_gen2)
 >     where choice = randomInt 8 gen --chances are it will modify the values
 >           a_index = randomInt (length as -1) (snd choice)
 >           t_index = randomInt (length ts -1) (snd (a_index))
@@ -56,13 +56,26 @@ Mutate Envelope
 >           new_ts = modifyT
 >           modifyA = cycleAndApply (mutateDouble (snd t_index) 0.05) as (fst a_index)
 >           modifyT = cycleAndApply (mutateDouble (snd t_index) 0.05) ts (fst t_index)
->           addA as = as
->           addT ts = ts
+>           new_gen = (snd t_index)
+>           addA as = as --TODO: add as
+>           addT ts = ts --TODO: add ts
+>           new_gen2 = gen
 
 +++++++++++++++++++++++
 Mutate SoundPartial
 +++++++++++++++++++++++
 
+> mutateFreqN :: (RandomGen g)=> g -> SoundPartial -> (SoundPartial, g)
+> mutateFreqN gen (SoundPartial sr e) = ((SoundPartial new_sr e),new_gen)
+>   where new_sr_out = mutateFreqB gen sr
+>         new_sr = fst new_sr_out
+>         new_gen = snd new_sr_out
+
+> mutateEnvN :: (RandomGen g)=> g -> SoundPartial -> (SoundPartial, g)
+> mutateEnvN gen (SoundPartial sr e) = ((SoundPartial sr new_e),new_gen)
+>   where new_e_out = mutateEnv gen e
+>         new_e = fst new_e_out
+>         new_gen = snd new_e_out
 
 +++++++++++++++++++++++
 Choose Mutation From A List
@@ -126,12 +139,12 @@ Mutate Normal SoundData
 >         mut_out = chooseMutation gen2 options
 >         sd_out = randomInt (length sndData - 1) (snd mut_out)
 >         n = fst sd_out
->         prob_out = randomInt 3 (snd sd_out)
+>         prob_out = randomInt 7 (snd sd_out)
 >         prob2 = fst prob_out
 >         gen_out = snd prob_out
 >         newSndData
->           | prob2 <= 1 = cycleAndApply (fst mut_out) sndData n
->           | prob2 == 2 = remove_partial n --ADD OR REMOVE HERE
+>           | prob2 <= 5 = cycleAndApply (fst mut_out) sndData n
+>           | prob2 == 6 = remove_partial n --ADD OR REMOVE HERE
 >           | otherwise = add_partial
 >             where
 >               remove_partial i = delete (sndData !! i) sndData
