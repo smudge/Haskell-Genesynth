@@ -42,13 +42,15 @@ Mutate SoundRoots (or BasicPartial)
 
 
 
-+++++++++++++++++++++++
-Mutate Envelope
-+++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++
+Mutate Envelope --(used by mutateEnvN)
+++++++++++++++++++++++++++++++++++++++
 
+> mutateEnv :: (RandomGen g) => g -> Envelope -> (Envelope, g)
 > mutateEnv gen (LinSeg as ts)
 >   | (fst choice) < 1 = ((LinSeg (addA as) (addT ts)), new_gen)
->   | otherwise = ((LinSeg new_as new_ts), new_gen2)
+>   | (fst choice) < 6 = ((LinSeg new_as ts), new_gen2)
+>   | otherwise = ((LinSeg as new_ts), new_gen2)
 >     where choice = randomInt 8 gen --chances are it will modify the values
 >           a_index = randomInt (length as -1) (snd choice)
 >           t_index = randomInt (length ts -1) (snd (a_index))
@@ -57,8 +59,8 @@ Mutate Envelope
 >           modifyA = cycleAndApply (mutateDouble (snd t_index) 0.05) as (fst a_index)
 >           modifyT = cycleAndApply (mutateDouble (snd t_index) 0.05) ts (fst t_index)
 >           new_gen = (snd t_index)
->           addA as = as --TODO: add as
->           addT ts = ts --TODO: add ts
+>           addA as = as++[last as]
+>           addT ts = ts++[(last ts)+0.1]
 >           new_gen2 = gen
 
 +++++++++++++++++++++++
@@ -82,6 +84,7 @@ Choose Mutation From A List
 +++++++++++++++++++++++
 
 > --choose a random mutation from a list of mutations ("mutOptionsB")
+> chooseMutation :: (RandomGen g) => g -> (StdGen -> [a]) -> (a,g)
 > chooseMutation gen options = ((array !! get_i),out_gen)
 >   where array = (options gen2)
 >         out = randomInt 500 gen
@@ -156,6 +159,7 @@ Helper Functions
 +++++++++++++++++++++++
 
 > --this is used by the GA to apply a mutation to all in a list
+> applyToAll :: (b -> t -> (a,b)) -> b -> [t] -> [a]
 > applyToAll fn gen [] = []
 > applyToAll fn gen (a:as) = new_a:(applyToAll fn new_gen as)
 >   where out = fn gen a

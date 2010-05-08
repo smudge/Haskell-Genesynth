@@ -12,12 +12,24 @@ SoundDataRandom module:
 > module SoundDataRandom where
 > import System.Random
 
+++++++++++++++++++++++++++++
+Quick Syntax for mkStdGen
+++++++++++++++++++++++++++++
+
 > -- returns a generator given the seed
 > mygen :: Int -> StdGen
 > mygen seed = mkStdGen (seed :: Int)
 
-> -- quickly generate a random number using one of these functions
+++++++++++++++++++++++++++++
+Handy-Dandy-Randy Functions
+++++++++++++++++++++++++++++
+-- quickly generate a random value using one of these functions:
+
+> randomDouble :: (RandomGen g) => Double -> g -> (Double, g)
 > randomDouble n gen = randomR ((-n)::Double,n::Double) gen
+
+> randomInt :: (RandomGen g) => Int -> g -> (Int, g)
 > randomInt n gen = randomR (0::Int,n::Int) gen
+
 > randomBool :: (RandomGen g) => g -> (Bool, g)
 > randomBool gen = random gen

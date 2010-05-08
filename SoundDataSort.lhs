@@ -13,8 +13,11 @@ SoundDataSort module:
 > import SoundData
 > import Data.List
 
++++++++++++++++++++++++
+Handy-Dandy Sort Functions
++++++++++++++++++++++++
 
-> --Sort function (sorts by frequency, low to high)
+> --Sort "Normal" SounData (sorts by frequency, low to high)
 > sortSoundData :: SoundData -> SoundData
 > sortSoundData = sortBy sortSD
 >   where
@@ -24,8 +27,19 @@ SoundDataSort module:
 >       where fa = (pFreq a)
 >             fb = (pFreq b)
 
+> --Sort BasicSoundData value (sorts by frequency, low to high)
+> sortBasic :: BasicSoundData -> BasicSoundData
+> sortBasic = sortBy sortSD
+>   where
+>     sortSD (Sine a _) (Sine b _)
+>       | a > b = GT
+>       | otherwise = LT
 
-> --Sort SoundData by paired "fitness" value
++++++++++++++++++++++++
+Sort by paired "fitness" value
++++++++++++++++++++++++
+
+> --Sort SoundData or BasicSoundData by paired "fitness" value
 > sortPairs :: [(a,Double)] -> [(a,Double)]
 > sortPairs = sortBy sortSD
 >   where
@@ -33,10 +47,3 @@ SoundDataSort module:
 >       | (snd a) > (snd b) = GT
 >       | otherwise = LT
 
-> --Sort function (for "Basic" sound data values) -- sorts by frequency
-> sortBasic :: BasicSoundData -> BasicSoundData
-> sortBasic = sortBy sortSD
->   where
->     sortSD (Sine a _) (Sine b _)
->       | a > b = GT
->       | otherwise = LT

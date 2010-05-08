@@ -36,8 +36,8 @@ Very basic functions heavy in defaults:
 
 > runNormal x mut_ops mut_prob crossover_fn start target = runNGens (processPopulation (compareNormal target) crossover_fn (mutateNormal mut_prob mut_ops)) [start] (mygen 20340) x []
 
- renderNormal name number_between sdata = normalRenderOrder name number_between sdata
- simpleNormal start target x output = renderNormal output 10 (runNormal x mutOptionsN 100 crossoverNormalPop start target)
+> renderNormal name dur number_between sdata = renderSoundC name dur (normalRenderOrder name number_between sdata)
+> simpleNormal start target x output dur = renderNormal output dur 10 (runNormal 20 mutOptionsN x crossoverNormalPop start target)
 
 
 +++++++++++++++++++++++
@@ -71,9 +71,10 @@ The Genetic Algorithm
 >     new_pop = take 5 de_fitnessed --populations are limited to 5! 5 5 5 5 5!!!! (this is my magic number -- i could expose it if I wished, but it shouldn't be much more than 5 for speed reasons)
 >     top_total_fitness = (snd (head sorted))
 
+> --run processPopulation for N generations ("popRun" is an entire processPopulation call)
 > runNGens popRun current_pop randGen 0 history = ((head current_pop):history)
 > runNGens popRun current_pop randGen n history 
->   | fitness < 1.0 = ((head current_pop):history) --check for convergence!
+>   | fitness < 0.1 = ((head current_pop):history) --check for convergence!
 >   | otherwise = runNGens popRun new_pop new_gen (n-1) ((head current_pop):history)
 >     where process = popRun current_pop randGen
 >           new_pop = fst (fst process)
@@ -111,6 +112,30 @@ Parsing And Rendering the Results
 > --Use the funciton above, but render the results.
 > basicRenderComplex name dur timestep basic_data = renderSoundC name (dur*2) (basicRunToComplexData dur timestep basic_data)
 
+
+> normalRenderOrder name number sdata = folded
+>   where
+>     n = number+2 --we must include head and last
+>     lst = map (\n -> (sdata !! (round ((fromIntegral n)*((fromIntegral (sd_ln-1))/(fromIntegral (total_num-1))))))) [0..(total_num-1)] --only take total_num
+>     sd_ln = length sdata
+>     total_num 
+>       | n <= sd_ln = n
+>       | otherwise = n
+>     folded = foldl combineTwoSDValues emptyComplex lst
+> --combine two sound data values, the left being complex and the right being "normal"
+> combineTwoSDValues a b= zipWith combinePartials a b
+>   where 
+>    combinePartials (ComplexPartial r1 e1) (SoundPartial r2 e2) = (ComplexPartial (fr r1 r2) new_env)
+>      where 
+>        fr r1 (Sine f _) = r1++[(max_time,f),(max_time2,f)]
+>        new_env = (env e1 e2)
+>        env (LinSeg a1 ts1) (LinSeg a ts) = (LinSeg (a1++a) (ts1++(map (\x -> x+(max_time)) ts)))
+>        max_time = (foldr max 0 ((\(LinSeg as ts) -> ts) e1)+0.1)
+>        max_time2 = (foldr max 0 ((\(LinSeg as ts) -> ts) new_env))
+
+
+> emptyComplex = map (\x -> emptyP) [0..15]
+>   where emptyP = ComplexPartial [(0.0,10.0),(0.01,10.0)] (LinSeg [0.0,0.01] [0.01])
 
 +++++++++++++++++++++++++
 A Couple Helper Functions

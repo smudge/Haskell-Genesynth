@@ -23,16 +23,20 @@ Compare Normal Types
 > compareNormal :: SoundData -> SoundData -> Double
 > compareNormal a b = helper (sortSoundData a) (sortSoundData b) 0
 >   where
->     helper [] b s = s + sumRemainder b
->     helper a [] s = s + sumRemainder a
+>     helper [] b s = s + (sumRemainder b)*100 --the right number of partials is heavily preferred
+>     helper a [] s = s + (sumRemainder a)*100 --the right number of partials is heavily preferred
 >     helper a b s = helper (tail a) (tail b) (s + (comparePartial (head a) (head b)))
 >     comparePartial :: SoundPartial -> SoundPartial -> Double
 >     comparePartial a b = (compareFreq a b) + (compareEnv a b)
 >     compareFreq a b = abs((pFreq a) - (pFreq b)) --takes the frequency difference
 >     sumRemainder xs = foldr (+) 0 (map (\x -> (pFreq x)) xs)
-
-> compareEnv a b = 0 --TODO: compare env
-
+>     compareEnv (SoundPartial _ (LinSeg a1 t1)) (SoundPartial _ (LinSeg a2 t2)) = (compareList a1 a2) + (compareList t1 t2)
+>       where 
+>         compareList :: [Double] -> [Double] -> Double
+>         compareList a b = helper_ a b 0
+>         helper_ [] b s = (s + (fromIntegral (length b)))
+>         helper_ a [] s = (s + (fromIntegral (length a)))
+>         helper_ (a:as) (b:bs) s = helper_ as bs (s+(abs(a-b)))
 
 +++++++++++++++++++++++
 Compare Two Basic Types
