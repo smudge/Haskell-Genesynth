@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (MiKTeX 2.8) (preloaded format=pdflatex 2010.5.7)  7 MAY 2010 22:31
+This is pdfTeX, Version 3.1415926-1.40.10 (MiKTeX 2.8) (preloaded format=pdflatex 2010.5.7)  8 MAY 2010 00:06
 entering extended mode
 **C:/Users/Nathan/My*Dropbox/Yale/Spring*2010/CS*490/Haskell-Genesynth/Document
 s/Final*Write-up.tex
@@ -96,23 +96,23 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 14.
  [1
 
-{C:/ProgramData/MiKTeX/2.8/pdftex/config/pdftex.map}] [2]
-<basic_wav.png, id=15, 847.165pt x 131.49126pt>
+{C:/ProgramData/MiKTeX/2.8/pdftex/config/pdftex.map}] [2] [3]
+<basic_wav.png, id=18, 847.165pt x 131.49126pt>
 File: basic_wav.png Graphic file (type png)
- <use basic_wav.png> [3 <C:/Users/Nathan/My Dropbox/Yale/Spring 2010/CS 490/Has
-kell-Genesynth/Documents/basic_wav.png (PNG copy)>] <normal_wav.png, id=19, 691
-.58376pt x 119.44624pt>
+ <use basic_wav.png>
+<normal_wav.png, id=19, 691.58376pt x 119.44624pt>
 File: normal_wav.png Graphic file (type png)
-
-<use normal_wav.png> [4 <C:/Users/Nathan/My Dropbox/Yale/Spring 2010/CS 490/Has
-kell-Genesynth/Documents/normal_wav.png (PNG copy)>]
+ <use normal_wav.png>
+[4 <C:/Users/Nathan/My Dropbox/Yale/Spring 2010/CS 490/Haskell-Genesynth/Docume
+nts/basic_wav.png (PNG copy)> <C:/Users/Nathan/My Dropbox/Yale/Spring 2010/CS 4
+90/Haskell-Genesynth/Documents/normal_wav.png (PNG copy)>] [5]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 125.
+(Font)              <10.95> on input line 167.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 125.
+(Font)              <9> on input line 167.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 125.
- [5] [6] [7]
+(Font)              <5> on input line 167.
+ [6] [7] [8]
 ("C:\Users\Nathan\My Dropbox\Yale\Spring 2010\CS 490\Haskell-Genesynth\Document
 s\Final Write-up.aux") ) 
 Here is how much of TeX's memory you used:
@@ -122,7 +122,7 @@ Here is how much of TeX's memory you used:
  4552 multiletter control sequences out of 15000+200000
  10582 words of font info for 37 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 25i,8n,19p,911b,299s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 25i,8n,19p,926b,298s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files/MiKTeX 2.8/fonts/type1/public/amsfont
 s/cm/cmbx10.pfb><C:/Program Files/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmb
 x12.pfb><C:/Program Files/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmr10.pfb><
@@ -134,9 +134,9 @@ fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.8/fonts/type
 msfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX 2.8/fonts/type1/public/amsfonts/
 cm/cmti9.pfb><C:/Program Files/MiKTeX 2.8/fonts/type1/public/amsfonts/cm/cmtt10
 .pfb>
-Output written on "Final Write-up.pdf" (7 pages, 175405 bytes).
+Output written on "Final Write-up.pdf" (8 pages, 178094 bytes).
 PDF statistics:
- 72 PDF objects out of 1000 (max. 8388607)
+ 75 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 
